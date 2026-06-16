@@ -1,44 +1,70 @@
-# Rhondda Pilot – Data Collection Script
+# Rhondda Pilot - Data Collection Script
 
-Mini-pilote pour la validation de la méthode **Rhondda**. Ce script collecte un pool de 30 réponses pour 200 items du dataset **GSM8K** en utilisant `gpt-5.4-mini` (OpenAI) via le harness robuste **`@vegacorp/llm-runtime`** (source vendée sous `llm-runtime-main/`).
+Mini-pilote pour la validation de la methode **Rhondda**. Le script collecte 30 reponses pour chacun des 200 premiers items du test set **GSM8K**, via OpenAI `gpt-5.4-mini` et le harness local `@vegacorp/llm-runtime`.
 
-Le fichier de sortie (`gsm8k_pool.jsonl`) servira à l'analyse post-hoc (bootstrap, calcul de la stabilité, courbes accuracy vs k) dans la seconde phase.
+Le resultat principal est `gsm8k_pool.jsonl`, avec une ligne JSON par reponse:
 
-> ⚠️ Le script de collecte n'est pas encore implémenté — ce dépôt contient pour l'instant le harness vendé et l'environnement de développement prêt à l'emploi.
+```json
+{"item_id":"gsm8k_test_0001","tirage":1,"prompt":"...","response":"...","tokens":{"input":180,"output":95,"total":275},"timestamp":"2026-06-16T14:22:10.123Z"}
+```
 
-## Getting Started
-
-### Prerequisites
-
-- **Node.js ≥ 20** (ESM) — imposé par `@vegacorp/llm-runtime`
-- **pnpm** — uniquement pour builder le harness vendé (`llm-runtime-main/`)
-- Une clé API OpenAI avec accès au modèle `gpt-5.4-mini`
-- Budget ~4 $ (estimé pour 200 items × 30 tirages)
-
-### Installation
+## Installation
 
 ```bash
-git clone git@github.com:fanilosendrison/rhondda-mini-pilot.git
-cd rhondda-mini-pilot
+# 1. Builder le harness local
+cd llm-runtime-main
+pnpm install
+pnpm build
+cd ..
 
-# 1. Builder le harness vendé (produit llm-runtime-main/dist/)
-cd llm-runtime-main && pnpm install && pnpm build && cd ..
-
-# 2. Installer les dépendances du pilote (lie le harness via file:)
+# 2. Installer le pilote
 npm install
 
-# 3. Configurer le secret
-cp .env.example .env          # puis renseigner OPENAI_API_KEY dans .env
+# 3. Configurer la cle OpenAI
+cp .env.example .env
 ```
 
-### Vérification
+Renseigner `OPENAI_API_KEY` dans `.env`.
+
+## Lancer la collecte
 
 ```bash
-npm test          # vitest run --passWithNoTests
-npm run lint      # biome check (lint + format)
-npm run typecheck # tsc --noEmit
+npm start
 ```
 
-### Lancer la collecte
+`npm start` compile `src/collect.ts`, puis lance `dist/src/collect.js`. `npm run dev` est un alias equivalent.
 
-À venir — le script de collecte (`src/`) reste à implémenter. Il chargera `.env` via le support natif `node --env-file`, sélectionnera 200 items GSM8K, tirera 30 réponses par item via `@vegacorp/llm-runtime`, et écrira `gsm8k_pool.jsonl`.
+Le script:
+
+- telecharge le test set GSM8K depuis le depot public `openai/grade-school-math`;
+- met le dataset en cache local dans `gsm8k_test_cache.jsonl`;
+- ecrit chaque reponse immediatement dans `gsm8k_pool.jsonl`;
+- reprend automatiquement les tirages manquants si le fichier JSONL existe deja;
+- applique un backoff exponentiel avec jitter sur les 429, timeouts et erreurs reseau;
+- journalise les autres erreurs et passe a l'item suivant;
+- affiche les tokens cumules et le cout estime en temps reel.
+
+## Configuration
+
+Les valeurs par defaut correspondent au mini-pilote demande:
+
+```bash
+OPENAI_MODEL=gpt-5.4-mini
+OPENAI_TEMPERATURE=0.7
+GSM8K_ITEM_COUNT=200
+GSM8K_DRAWS_PER_ITEM=30
+GSM8K_POOL_FILE=gsm8k_pool.jsonl
+GSM8K_DATASET_CACHE_FILE=gsm8k_test_cache.jsonl
+OPENAI_INPUT_USD_PER_1M=0.75
+OPENAI_OUTPUT_USD_PER_1M=4.50
+```
+
+Les tarifs par defaut utilisent la tarification standard OpenAI pour `gpt-5.4-mini` au 2026-06-16. Ajuster `OPENAI_INPUT_USD_PER_1M` et `OPENAI_OUTPUT_USD_PER_1M` si votre endpoint ou votre mode de traitement facture autrement.
+
+## Verification
+
+```bash
+npm run typecheck
+npm run lint
+npm test
+```
