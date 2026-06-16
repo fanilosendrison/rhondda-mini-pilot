@@ -79,6 +79,7 @@ LIBS_EVAL.yaml
 PROJECT_INDEX.md
 SPEC_MANIFEST.md
 .index-state.json
+CLAUDE.md
 
 # ---------- Vendored package config (may hold registry tokens) ----------
 llm-runtime-main/.npmrc

@@ -1,0 +1,29 @@
+{
+  "name": "rhondda-mini-pilot",
+  "version": "0.1.0",
+  "description": "Data-collection pilot for the Rhondda method — collects a 30-response pool for 200 GSM8K items via @vegacorp/llm-runtime.",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "lint": "biome check --no-errors-on-unmatched src tests",
+    "lint:fix": "biome check --write --no-errors-on-unmatched src tests",
+    "format": "biome format --write --no-errors-on-unmatched src tests",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vegacorp/llm-runtime": "file:llm-runtime-main",
+    "pino": "^9.5.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.0",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0"
+  }
+}
