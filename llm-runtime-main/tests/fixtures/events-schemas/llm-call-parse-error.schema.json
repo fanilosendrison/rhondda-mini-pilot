@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "llm_call_parse_error",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventType",
+    "callId",
+    "provider",
+    "model",
+    "timestamp",
+    "message"
+  ],
+  "properties": {
+    "eventType": { "const": "llm_call_parse_error" },
+    "callId": { "type": "string", "minLength": 26, "maxLength": 26 },
+    "provider": {
+      "enum": [
+        "anthropic",
+        "openai",
+        "google",
+        "deepseek",
+        "mistral",
+        "groq",
+        "together",
+        "ollama"
+      ]
+    },
+    "model": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "message": { "type": "string" }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "msg_01StOpSeQuEnCeFiXtUrE00001",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-opus-4-6-20260301",
+  "content": [
+    {
+      "type": "text",
+      "text": "Partial output before hitting the stop sequence"
+    }
+  ],
+  "stop_reason": "stop_sequence",
+  "stop_sequence": "END",
+  "usage": {
+    "input_tokens": 18,
+    "output_tokens": 12
+  }
+}

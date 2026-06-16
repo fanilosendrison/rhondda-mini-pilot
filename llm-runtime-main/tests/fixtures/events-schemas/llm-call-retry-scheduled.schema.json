@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "llm_call_retry_scheduled",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventType",
+    "callId",
+    "provider",
+    "model",
+    "timestamp",
+    "attempt",
+    "delayMs",
+    "reason",
+    "errorKind"
+  ],
+  "properties": {
+    "eventType": { "const": "llm_call_retry_scheduled" },
+    "callId": { "type": "string", "minLength": 26, "maxLength": 26 },
+    "provider": {
+      "enum": [
+        "anthropic",
+        "openai",
+        "google",
+        "deepseek",
+        "mistral",
+        "groq",
+        "together",
+        "ollama"
+      ]
+    },
+    "model": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "attempt": { "type": "integer", "minimum": 0 },
+    "delayMs": { "type": "integer", "minimum": 0 },
+    "reason": { "type": "string" },
+    "errorKind": { "type": "string" }
+  }
+}

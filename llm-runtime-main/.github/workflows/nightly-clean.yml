@@ -1,0 +1,16 @@
+name: nightly-clean
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # 00:00 UTC daily (02:00 Paris CEST, 01:00 CET)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  call:
+    uses: fanilosendrison/cc-ci/.github/workflows/nightly-clean-callable.yml@main
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

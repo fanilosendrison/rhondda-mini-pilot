@@ -1,0 +1,22 @@
+{
+  "id": "msg_01ThInKiNgFiXtUrE00000001",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-opus-4-6-20260301",
+  "content": [
+    {
+      "type": "thinking",
+      "thinking": "reasoning text..."
+    },
+    {
+      "type": "text",
+      "text": "Answer"
+    }
+  ],
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "usage": {
+    "input_tokens": 24,
+    "output_tokens": 48
+  }
+}

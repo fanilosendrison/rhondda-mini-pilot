@@ -1,0 +1,15 @@
+# <type>(<scope>): <subject>    # max 70 chars — imperative, no period
+#
+# <body>                        # explain WHY, not what — wrap at 72 chars
+#
+# <footer>                      # BREAKING CHANGE: ..., Refs: #123, Closes: #456
+#
+# ─── Conventional Commits ─────────────────────────────────────────────
+# type: feat | fix | docs | style | refactor | perf | test | build | ci | chore | revert
+# scope: optional — module/area affected (e.g. runtime, sanitizer, retry, infra)
+# Breaking change: add "!" after type/scope OR "BREAKING CHANGE:" in footer
+#
+# Examples:
+#   feat(retry): add exponential backoff with jitter
+#   fix(sanitizer)!: reject empty strings in messages
+#   chore: initial scaffolding

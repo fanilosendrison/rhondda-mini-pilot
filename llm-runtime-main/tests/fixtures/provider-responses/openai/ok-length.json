@@ -1,0 +1,21 @@
+{
+  "id": "chatcmpl-length-0001",
+  "object": "chat.completion",
+  "created": 1730000100,
+  "model": "gpt-4o-2024-08-06",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "This response was truncated because it reached the maximum number of tokens allowed. The model was in the middle of producing further text when the limit was hit, so the content ends abruptly without a natural conclusion."
+      },
+      "finish_reason": "length"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 64,
+    "completion_tokens": 512,
+    "total_tokens": 576
+  }
+}

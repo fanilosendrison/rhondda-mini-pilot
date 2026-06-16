@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "llm_call_unknown_error_classified",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventType",
+    "callId",
+    "provider",
+    "model",
+    "timestamp",
+    "rawMessage"
+  ],
+  "properties": {
+    "eventType": { "const": "llm_call_unknown_error_classified" },
+    "callId": { "type": "string", "minLength": 26, "maxLength": 26 },
+    "provider": {
+      "enum": [
+        "anthropic",
+        "openai",
+        "google",
+        "deepseek",
+        "mistral",
+        "groq",
+        "together",
+        "ollama"
+      ]
+    },
+    "model": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "status": { "type": "integer" },
+    "bodySnippet": { "type": "string" },
+    "networkErrorKind": { "type": "string" },
+    "rawMessage": { "type": "string" }
+  }
+}

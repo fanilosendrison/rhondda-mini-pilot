@@ -1,0 +1,26 @@
+{
+  "id": "msg_01ToOlUsEfIxTuRe0000000001",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-opus-4-6-20260301",
+  "content": [
+    {
+      "type": "text",
+      "text": "Let me check..."
+    },
+    {
+      "type": "tool_use",
+      "id": "toolu_01AbCdEfGhIjKlMnOpQrStUv",
+      "name": "search",
+      "input": {
+        "query": "latest weather in Paris"
+      }
+    }
+  ],
+  "stop_reason": "tool_use",
+  "stop_sequence": null,
+  "usage": {
+    "input_tokens": 64,
+    "output_tokens": 40
+  }
+}

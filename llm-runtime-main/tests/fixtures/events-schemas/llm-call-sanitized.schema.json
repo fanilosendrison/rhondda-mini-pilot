@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "llm_call_sanitized",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventType",
+    "callId",
+    "provider",
+    "model",
+    "timestamp",
+    "thinkingTagsRemoved",
+    "jsonFenceRemoved"
+  ],
+  "properties": {
+    "eventType": { "const": "llm_call_sanitized" },
+    "callId": { "type": "string", "minLength": 26, "maxLength": 26 },
+    "provider": {
+      "enum": [
+        "anthropic",
+        "openai",
+        "google",
+        "deepseek",
+        "mistral",
+        "groq",
+        "together",
+        "ollama"
+      ]
+    },
+    "model": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "thinkingTagsRemoved": { "type": "boolean" },
+    "jsonFenceRemoved": { "type": "boolean" },
+    "rawContentPreview": { "type": "string" }
+  }
+}

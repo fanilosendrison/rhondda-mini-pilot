@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "llm_call_end",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventType",
+    "callId",
+    "provider",
+    "model",
+    "timestamp",
+    "success",
+    "durationMs",
+    "attemptCount"
+  ],
+  "properties": {
+    "eventType": { "const": "llm_call_end" },
+    "callId": { "type": "string", "minLength": 26, "maxLength": 26 },
+    "provider": {
+      "enum": [
+        "anthropic",
+        "openai",
+        "google",
+        "deepseek",
+        "mistral",
+        "groq",
+        "together",
+        "ollama"
+      ]
+    },
+    "model": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "success": { "type": "boolean" },
+    "durationMs": { "type": "integer", "minimum": 0 },
+    "attemptCount": { "type": "integer", "minimum": 0 },
+    "termination": { "type": "string" },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "inputTokens": { "type": "integer", "minimum": 0 },
+        "outputTokens": { "type": "integer", "minimum": 0 },
+        "totalTokens": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "providerModel": { "type": "string" },
+    "errorKind": { "type": "string" }
+  }
+}

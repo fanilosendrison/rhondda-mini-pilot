@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "llm_embedding_end",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventType",
+    "callId",
+    "provider",
+    "model",
+    "timestamp",
+    "success",
+    "totalBatches",
+    "totalDurationMs"
+  ],
+  "properties": {
+    "eventType": { "const": "llm_embedding_end" },
+    "callId": { "type": "string", "minLength": 26, "maxLength": 26 },
+    "provider": {
+      "enum": [
+        "anthropic",
+        "openai",
+        "google",
+        "deepseek",
+        "mistral",
+        "groq",
+        "together",
+        "ollama"
+      ]
+    },
+    "model": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "success": { "type": "boolean" },
+    "totalBatches": { "type": "integer", "minimum": 0 },
+    "totalDurationMs": { "type": "integer", "minimum": 0 },
+    "errorKind": { "type": "string" }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "x-ratelimit-limit-tokens": "6000",
+  "x-ratelimit-remaining-tokens": "5800",
+  "x-ratelimit-reset-tokens": "5.5s",
+  "x-ratelimit-limit-requests": "30",
+  "x-ratelimit-remaining-requests": "29"
+}
