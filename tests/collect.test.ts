@@ -10,10 +10,9 @@ import {
   countCompletedItems,
   countCompletedRecords,
   estimateCost,
-  loadCheckpoint,
-  parseDatasetJsonl,
-  withItemIds,
-} from '../src/collect.js';
+} from '../src/domain/pool.js';
+import { loadCheckpoint } from '../src/infra/checkpoint.js';
+import { parseDatasetJsonl, withItemIds } from '../src/infra/dataset.js';
 
 describe('GSM8K parsing', () => {
   it('parses JSONL rows and assigns stable GSM8K test IDs', () => {
