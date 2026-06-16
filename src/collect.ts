@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 import { appendFile, mkdir, readFile, stat, truncate, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import type { LLMResponse, ProviderAdapter } from '@vegacorp/llm-runtime';
 import {
   createOpenAIAdapter,
@@ -29,23 +30,23 @@ const CONFIG = {
   timeoutMs: readPositiveIntEnv('OPENAI_TIMEOUT_MS', 120_000),
 } as const;
 
-interface Gsm8kRawItem {
+export interface Gsm8kRawItem {
   readonly question: string;
   readonly answer: string;
 }
 
-interface Gsm8kItem extends Gsm8kRawItem {
+export interface Gsm8kItem extends Gsm8kRawItem {
   readonly itemId: string;
   readonly ordinal: number;
 }
 
-interface TokenUsage {
+export interface TokenUsage {
   readonly input: number;
   readonly output: number;
   readonly total: number;
 }
 
-interface PoolRecord {
+export interface PoolRecord {
   readonly item_id: string;
   readonly tirage: number;
   readonly prompt: string;
@@ -54,13 +55,13 @@ interface PoolRecord {
   readonly timestamp: string;
 }
 
-interface TokenTotals {
+export interface TokenTotals {
   input: number;
   output: number;
   total: number;
 }
 
-interface CheckpointState {
+export interface CheckpointState {
   readonly completedKeys: Set<string>;
   readonly tokenTotals: TokenTotals;
 }
@@ -74,7 +75,7 @@ process.once('SIGINT', () => {
   );
 });
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (apiKey === undefined || apiKey.length === 0) {
     throw new Error('OPENAI_API_KEY is required. Copy .env.example to .env and fill it in.');
@@ -206,7 +207,7 @@ async function tryReadDatasetCache(
   return null;
 }
 
-function parseDatasetJsonl(text: string, source: string): readonly Gsm8kRawItem[] {
+export function parseDatasetJsonl(text: string, source: string): readonly Gsm8kRawItem[] {
   const items: Gsm8kRawItem[] = [];
   const lines = text.split(/\r?\n/);
 
@@ -230,7 +231,7 @@ function parseDatasetJsonl(text: string, source: string): readonly Gsm8kRawItem[
   return items;
 }
 
-function withItemIds(items: readonly Gsm8kRawItem[]): readonly Gsm8kItem[] {
+export function withItemIds(items: readonly Gsm8kRawItem[]): readonly Gsm8kItem[] {
   return items.map((item, index) => ({
     ...item,
     itemId: `gsm8k_test_${String(index + 1).padStart(4, '0')}`,
@@ -238,7 +239,7 @@ function withItemIds(items: readonly Gsm8kRawItem[]): readonly Gsm8kItem[] {
   }));
 }
 
-async function loadCheckpoint(
+export async function loadCheckpoint(
   outputPath: string,
   knownItemIds: ReadonlySet<string>,
 ): Promise<CheckpointState> {
@@ -369,7 +370,7 @@ function computeRetryDelayMs(attempt: number, error: unknown): number {
   return Math.min(withRetryAfter, CONFIG.retryMaxMs);
 }
 
-function buildPoolRecord(item: Gsm8kItem, draw: number, response: LLMResponse): PoolRecord {
+export function buildPoolRecord(item: Gsm8kItem, draw: number, response: LLMResponse): PoolRecord {
   const input = response.usage.inputTokens ?? 0;
   const output = response.usage.outputTokens ?? 0;
   const total = response.usage.totalTokens ?? input + output;
@@ -398,7 +399,7 @@ function printProgress(
   );
 }
 
-function countCompletedDraws(itemId: string, completedKeys: ReadonlySet<string>): number {
+export function countCompletedDraws(itemId: string, completedKeys: ReadonlySet<string>): number {
   let count = 0;
   for (let draw = 1; draw <= CONFIG.drawsPerItem; draw += 1) {
     if (completedKeys.has(checkpointKey(itemId, draw))) count += 1;
@@ -406,7 +407,7 @@ function countCompletedDraws(itemId: string, completedKeys: ReadonlySet<string>)
   return count;
 }
 
-function countCompletedItems(
+export function countCompletedItems(
   items: readonly Gsm8kItem[],
   completedKeys: ReadonlySet<string>,
 ): number {
@@ -417,7 +418,7 @@ function countCompletedItems(
   return count;
 }
 
-function countCompletedRecords(
+export function countCompletedRecords(
   items: readonly Gsm8kItem[],
   completedKeys: ReadonlySet<string>,
 ): number {
@@ -428,7 +429,7 @@ function countCompletedRecords(
   return count;
 }
 
-function checkpointKey(itemId: string, draw: number): string {
+export function checkpointKey(itemId: string, draw: number): string {
   return `${itemId}:${draw}`;
 }
 
@@ -438,7 +439,7 @@ function addTokens(total: TokenTotals, tokens: TokenUsage): void {
   total.total += tokens.total;
 }
 
-function estimateCost(tokens: TokenTotals): number {
+export function estimateCost(tokens: TokenTotals): number {
   return (
     (tokens.input / 1_000_000) * CONFIG.inputUsdPer1M +
     (tokens.output / 1_000_000) * CONFIG.outputUsdPer1M
@@ -564,7 +565,9 @@ function writeErr(message: string): void {
   process.stderr.write(`${message}\n`);
 }
 
-main().catch((error) => {
-  writeErr(`[${timeLabel()}] Fatal: ${formatError(error)}`);
-  process.exitCode = 1;
-});
+if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    writeErr(`[${timeLabel()}] Fatal: ${formatError(error)}`);
+    process.exitCode = 1;
+  });
+}

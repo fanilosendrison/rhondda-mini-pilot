@@ -13,9 +13,9 @@
     "dev": "npm run start",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "lint": "biome check --no-errors-on-unmatched src",
-    "lint:fix": "biome check --write --no-errors-on-unmatched src",
-    "format": "biome format --write --no-errors-on-unmatched src",
+    "lint": "biome check --no-errors-on-unmatched src tests",
+    "lint:fix": "biome check --write --no-errors-on-unmatched src tests",
+    "format": "biome format --write --no-errors-on-unmatched src tests",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
