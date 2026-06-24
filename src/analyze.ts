@@ -198,10 +198,36 @@ function majorityVote(answers: readonly (number | null)[]): number | null {
   return bestKey === null ? null : Number.parseFloat(bestKey);
 }
 
-function sampleWithReplacement(arr: readonly (number | null)[], k: number): (number | null)[] {
+/** Mulberry32 — fast 32-bit PRNG, deterministic given the same seed. */
+function createRng(seed: number): () => number {
+  let state = seed | 0;
+  return (): number => {
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4_294_967_296;
+  };
+}
+
+function readSeed(): number {
+  const env = process.env.SEED?.trim();
+  if (env !== undefined && env.length > 0) {
+    const parsed = Number(env);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  // Default: date-based seed — same day = same results
+  const today = new Date();
+  return today.getFullYear() * 10_000 + (today.getMonth() + 1) * 100 + today.getDate();
+}
+
+function sampleWithReplacement(
+  arr: readonly (number | null)[],
+  k: number,
+  nextFloat: () => number,
+): (number | null)[] {
   const result: (number | null)[] = [];
   for (let i = 0; i < k; i += 1) {
-    const idx = Math.floor(Math.random() * arr.length);
+    const idx = Math.floor(nextFloat() * arr.length);
     result.push(arr[idx] ?? null);
   }
   return result;
@@ -267,6 +293,12 @@ export async function main(): Promise<void> {
     (totalInputTokens / 1_000_000) * CONFIG.inputUsdPer1M +
     (totalOutputTokens / 1_000_000) * CONFIG.outputUsdPer1M;
 
+  // Deterministic PRNG — same pool + same date = same results.
+  // Override with SEED env var for exact reproduction across days.
+  const seed = readSeed();
+  const nextFloat = createRng(seed);
+  writeErr(`Seed: ${seed} (reproductible — set SEED=${seed} pour reproduire cette analyse)`);
+
   // ---------------------------------------------------------------------------
   // K-sweep: accuracy & stability per item
   // ---------------------------------------------------------------------------
@@ -284,7 +316,7 @@ export async function main(): Promise<void> {
 
       const bootstrapVotes: (number | null)[] = [];
       for (let b = 0; b < N_BOOTSTRAPS; b += 1) {
-        bootstrapVotes.push(majorityVote(sampleWithReplacement(answers, k)));
+        bootstrapVotes.push(majorityVote(sampleWithReplacement(answers, k, nextFloat)));
       }
 
       const nCorrect = bootstrapVotes.filter((v) => v === gold).length;
@@ -427,7 +459,7 @@ export async function main(): Promise<void> {
   lines.push(`**Cost:** $${costEstimateUsd.toFixed(2)}  `);
   lines.push('');
   lines.push(
-    '> **Note:** Accuracy and stability values come from bootstrap resampling (N=200) without a fixed seed. Re-running the analysis on the same pool will produce slightly different numbers. Differences ≤0.01 are noise.',
+    `> **Note:** Bootstrap resampling (N=200) uses a deterministic PRNG seeded from the date or \`SEED\` env var. Seed for this run: **${seed}**. Re-running with the same seed on the same pool yields identical numbers.`,
   );
   lines.push('');
   lines.push('## K-sweep');
