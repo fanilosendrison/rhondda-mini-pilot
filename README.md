@@ -28,8 +28,8 @@ npm start
 The script:
 
 - downloads the GSM8K test set from the public `openai/grade-school-math` repository;
-- caches the dataset locally in `gsm8k_test_cache.jsonl`;
-- writes each response immediately to `gsm8k_pool.jsonl`;
+- caches the dataset locally in `data/gsm8k_test_cache.jsonl`;
+- writes each response immediately to `data/gsm8k_pool.jsonl`;
 - automatically resumes missing draws if the JSONL file already exists;
 - applies exponential backoff with jitter on 429s, timeouts, and network errors;
 - logs other errors and skips to the next item;
@@ -37,7 +37,7 @@ The script:
 
 ### Output format
 
-One JSON line per response in `gsm8k_pool.jsonl`:
+One JSON line per response in `data/gsm8k_pool.jsonl`:
 
 ```json
 {"item_id":"gsm8k_test_0001","tirage":1,"prompt":"...","response":"...","tokens":{"input":180,"output":95,"total":275},"timestamp":"2026-06-16T14:22:10.123Z"}
@@ -49,7 +49,7 @@ One JSON line per response in `gsm8k_pool.jsonl`:
 npm run analyze
 ```
 
-Reads `gsm8k_pool.jsonl` and `gsm8k_test_cache.jsonl`, then computes:
+Reads `data/gsm8k_pool.jsonl` and `data/gsm8k_test_cache.jsonl`, then computes:
 
 - **K-sweep** — bootstrap accuracy and stability (N=200) for k ∈ {1, 5, 10, 20, 30}
 - **Correlations** — Pearson and Spearman between per-item accuracy and stability
@@ -69,8 +69,8 @@ OPENAI_MODEL=gpt-5.4-mini
 OPENAI_TEMPERATURE=0.7
 GSM8K_ITEM_COUNT=200
 GSM8K_DRAWS_PER_ITEM=30
-GSM8K_POOL_FILE=gsm8k_pool.jsonl
-GSM8K_DATASET_CACHE_FILE=gsm8k_test_cache.jsonl
+GSM8K_POOL_FILE=data/gsm8k_pool.jsonl
+GSM8K_DATASET_CACHE_FILE=data/gsm8k_test_cache.jsonl
 OPENAI_INPUT_USD_PER_1M=0.75
 OPENAI_OUTPUT_USD_PER_1M=4.50
 ```
