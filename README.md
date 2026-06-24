@@ -69,11 +69,33 @@ npm run lint
 npm test
 ```
 
-## Repository layout
+## Design Principles
+
+These principles guide all architectural decisions:
+
+- **Reproducibility** — same config → same protocol. Every response is traceable to its `(item_id, draw_index)`.
+- **Pool fidelity** — no silent data loss. Every failed call is logged, never masked; the output JSONL reflects exactly what was collected.
+- **Cost control** — budget ~$4 for ~6000 calls. No redundant calls; idempotent resume if collection is interrupted.
+- **Harness-first** — all LLM calls go through `@fanilosendrison/llm-runtime`, never raw HTTP. The harness provides the error taxonomy (RateLimitError, TimeoutError, etc.); retry with backoff is pilot-side to allow skipping to the next item when attempts are exhausted.
+
+## Architecture
 
 ```
-src/           Application code (collection + analysis)
-tests/         Vitest test suite
-data/          Generated pool & cache — gitignored
-analyses/      Analysis reports — gitignored
+src/
+  domain/        Protocol logic (item selection, draw counting, answer extraction) — zero external dependencies
+  infra/         I/O layer (dataset fetch, harness calls, JSONL checkpoint, retry)
+tests/           Vitest test suite
+data/            Generated pool & cache — gitignored
+analyses/        Analysis reports — gitignored
 ```
+
+- **domain/** is pure — no HTTP, no filesystem, no harness imports. Only types and computation.
+- **infra/** owns all side effects — network, disk, environment.
+- One file = one coherent concept. If a file name no longer describes its entire content, split it.
+
+## Protocol Rules
+
+- **Model is hardcoded** — `gpt-5.4-mini`, never arbitrarily configurable. This is a protocol constant.
+- **Append-only output** — one JSONL record per `(item_id, draw_index)`. Never overwrite a running pool; resume picks up where it left off.
+- **No silent loss** — failed draws after retry exhaustion are logged (pino) and the inner loop breaks to the next item. The gap is visible in the output.
+- **API key via environment** — `OPENAI_API_KEY` loaded from `.env`, validated at startup. Never hardcoded, never committed.
