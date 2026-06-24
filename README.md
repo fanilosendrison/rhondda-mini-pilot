@@ -74,6 +74,6 @@ npm test
 ```
 src/           Application code (collection + analysis)
 tests/         Vitest test suite
-data/          Generated outputs — gitignored
-analyses/      Analysis reports in Markdown — versioned
+data/          Generated pool & cache — gitignored
+analyses/      Analysis reports — gitignored
 ```

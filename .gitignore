@@ -81,6 +81,6 @@ SPEC_MANIFEST.md
 .index-state.json
 CLAUDE.md
 
-# ---------- Rhondda data collection outputs ----------
-data/gsm8k_pool.jsonl
-data/gsm8k_test_cache.jsonl
+# ---------- Rhondda outputs ----------
+data/
+analyses/
