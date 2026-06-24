@@ -1,6 +1,6 @@
 # Rhondda Pilot - Data Collection Script
 
-Mini-pilote pour la validation de la methode **Rhondda**. Le script collecte 30 reponses pour chacun des 200 premiers items du test set **GSM8K**, via OpenAI `gpt-5.4-mini` et le harness local `@vegacorp/llm-runtime`.
+Mini-pilote pour la validation de la methode **Rhondda**. Le script collecte 30 reponses pour chacun des 200 premiers items du test set **GSM8K**, via OpenAI `gpt-5.4-mini` et le harness `@fanilosendrison/llm-runtime`.
 
 Le resultat principal est `gsm8k_pool.jsonl`, avec une ligne JSON par reponse:
 
@@ -11,16 +11,10 @@ Le resultat principal est `gsm8k_pool.jsonl`, avec une ligne JSON par reponse:
 ## Installation
 
 ```bash
-# 1. Builder le harness local
-cd llm-runtime-main
-pnpm install
-pnpm build
-cd ..
-
-# 2. Installer le pilote
+# 1. Installer les dependances
 npm install
 
-# 3. Configurer la cle OpenAI
+# 2. Configurer la cle OpenAI
 cp .env.example .env
 ```
 

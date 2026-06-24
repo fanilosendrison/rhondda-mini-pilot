@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import type { LLMResponse } from '@vegacorp/llm-runtime';
+import type { LLMResponse } from '@fanilosendrison/llm-runtime';
 import { describe, expect, it } from 'vitest';
 import {
   buildPoolRecord,

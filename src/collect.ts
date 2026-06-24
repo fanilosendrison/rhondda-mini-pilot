@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { createOpenAIAdapter } from '@vegacorp/llm-runtime';
+import { createOpenAIAdapter } from '@fanilosendrison/llm-runtime';
 
 import { CONFIG, GSM8K_TEST_URL } from './config.js';
 import {

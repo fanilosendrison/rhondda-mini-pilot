@@ -1,8 +1,0 @@
-{
-  "error": {
-    "type": "invalid_request_error",
-    "message": "Unknown parameter: 'xyz'",
-    "param": "xyz",
-    "code": null
-  }
-}

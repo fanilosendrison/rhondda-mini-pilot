@@ -1,10 +1,10 @@
-import type { LLMResponse, ProviderAdapter } from '@vegacorp/llm-runtime';
+import type { LLMResponse, ProviderAdapter } from '@fanilosendrison/llm-runtime';
 import {
   OverloadedError,
   RateLimitError,
   TimeoutError,
   TransientProviderError,
-} from '@vegacorp/llm-runtime';
+} from '@fanilosendrison/llm-runtime';
 
 import { CONFIG } from '../config.js';
 import type { Gsm8kItem } from '../domain/types.js';

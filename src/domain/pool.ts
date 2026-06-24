@@ -1,4 +1,4 @@
-import type { LLMResponse } from '@vegacorp/llm-runtime';
+import type { LLMResponse } from '@fanilosendrison/llm-runtime';
 
 import { CONFIG } from '../config.js';
 import type { Gsm8kItem, PoolRecord, TokenTotals, TokenUsage } from './types.js';

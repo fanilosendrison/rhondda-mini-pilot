@@ -81,9 +81,6 @@ SPEC_MANIFEST.md
 .index-state.json
 CLAUDE.md
 
-# ---------- Vendored package config (may hold registry tokens) ----------
-llm-runtime-main/.npmrc
-
 # ---------- Rhondda data collection outputs ----------
 gsm8k_pool.jsonl
 gsm8k_test_cache.jsonl

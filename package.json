@@ -1,7 +1,7 @@
 {
   "name": "rhondda-mini-pilot",
   "version": "0.1.0",
-  "description": "Data-collection pilot for the Rhondda method — collects a 30-response pool for 200 GSM8K items via @vegacorp/llm-runtime.",
+  "description": "Data-collection pilot for the Rhondda method — collects a 30-response pool for 200 GSM8K items via @fanilosendrison/llm-runtime.",
   "private": true,
   "type": "module",
   "engines": {
@@ -20,7 +20,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@vegacorp/llm-runtime": "file:llm-runtime-main",
+    "@fanilosendrison/llm-runtime": "^0.1.0",
     "dotenv": "^17.4.2",
     "pino": "^9.5.0",
     "zod": "^3.24.0"

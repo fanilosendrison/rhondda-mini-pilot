@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
-import type { LLMResponse } from '@vegacorp/llm-runtime';
-import { createOpenAIAdapter } from '@vegacorp/llm-runtime';
+import type { LLMResponse } from '@fanilosendrison/llm-runtime';
+import { createOpenAIAdapter } from '@fanilosendrison/llm-runtime';
 import { describe, expect, it } from 'vitest';
 
 const API_KEY = process.env.OPENAI_API_KEY?.trim();
