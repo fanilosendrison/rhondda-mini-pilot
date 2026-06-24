@@ -1,68 +1,68 @@
 # Rhondda Pilot — GSM8K Pool & Analysis
 
-Mini-pilote pour la validation de la méthode **Rhondda**. Deux phases :
+Mini-pilot for validating the **Rhondda** method. Two phases:
 
-1. **Collecte** — 30 réponses pour chacun des 200 premiers items du test set **GSM8K**, via OpenAI `gpt-5.4-mini` et le harness [`@fanilosendrison/llm-runtime`](https://www.npmjs.com/package/@fanilosendrison/llm-runtime).
-2. **Analyse** — bootstrap, stabilité, courbes accuracy vs k, détection d'items pathologiques.
+1. **Collection** — 30 responses for each of the first 200 items of the **GSM8K** test set, via OpenAI `gpt-5.4-mini` and the [`@fanilosendrison/llm-runtime`](https://www.npmjs.com/package/@fanilosendrison/llm-runtime) harness.
+2. **Analysis** — bootstrap, stability, accuracy-vs-k curves, pathological item detection.
 
 ## Installation
 
 ```bash
-# 1. Installer les dépendances
+# 1. Install dependencies
 npm install
 
-# 2. Configurer la clé OpenAI
+# 2. Set your OpenAI key
 cp .env.example .env
 ```
 
-Renseigner `OPENAI_API_KEY` dans `.env`.
+Fill in `OPENAI_API_KEY` in `.env`.
 
-## Collecte
+## Collection
 
 ```bash
 npm start
 ```
 
-`npm start` compile `src/collect.ts`, puis lance `dist/src/collect.js`. `npm run dev` est un alias équivalent.
+`npm start` compiles `src/collect.ts`, then runs `dist/src/collect.js`. `npm run dev` is an equivalent alias.
 
-Le script :
+The script:
 
-- télécharge le test set GSM8K depuis le dépôt public `openai/grade-school-math` ;
-- met le dataset en cache local dans `gsm8k_test_cache.jsonl` ;
-- écrit chaque réponse immédiatement dans `gsm8k_pool.jsonl` ;
-- reprend automatiquement les tirages manquants si le fichier JSONL existe déjà ;
-- applique un backoff exponentiel avec jitter sur les 429, timeouts et erreurs réseau ;
-- journalise les autres erreurs et passe à l'item suivant ;
-- affiche les tokens cumulés et le coût estimé en temps réel.
+- downloads the GSM8K test set from the public `openai/grade-school-math` repository;
+- caches the dataset locally in `gsm8k_test_cache.jsonl`;
+- writes each response immediately to `gsm8k_pool.jsonl`;
+- automatically resumes missing draws if the JSONL file already exists;
+- applies exponential backoff with jitter on 429s, timeouts, and network errors;
+- logs other errors and skips to the next item;
+- displays cumulative tokens and estimated cost in real time.
 
-### Format de sortie
+### Output format
 
-Une ligne JSON par réponse dans `gsm8k_pool.jsonl` :
+One JSON line per response in `gsm8k_pool.jsonl`:
 
 ```json
 {"item_id":"gsm8k_test_0001","tirage":1,"prompt":"...","response":"...","tokens":{"input":180,"output":95,"total":275},"timestamp":"2026-06-16T14:22:10.123Z"}
 ```
 
-## Analyse
+## Analysis
 
 ```bash
 npm run analyze
 ```
 
-Lit `gsm8k_pool.jsonl` et `gsm8k_test_cache.jsonl`, puis :
+Reads `gsm8k_pool.jsonl` and `gsm8k_test_cache.jsonl`, then computes:
 
-- **K-sweep** — accuracy et stabilité bootstrap (N=200) pour k ∈ {1, 5, 10, 20, 30}
-- **Corrélations** — Pearson et Spearman entre accuracy et stabilité par item
-- **Changements de vote** — items dont le vote majoritaire change entre k=5 et k=20
-- **Items pathologiques** — forte stabilité mais faible accuracy (biais systématique)
-- **Items instables** — stabilité < 0.8 à k=20
-- **Comptages** — items toujours faux, items parfaits à k=30
+- **K-sweep** — bootstrap accuracy and stability (N=200) for k ∈ {1, 5, 10, 20, 30}
+- **Correlations** — Pearson and Spearman between per-item accuracy and stability
+- **Vote changes** — items whose majority vote flips between k=5 and k=20
+- **Pathological items** — high stability but low accuracy (systematic bias)
+- **Unstable items** — stability < 0.8 at k=20
+- **Counts** — always-wrong items, perfect-accuracy items at k=30
 
-Le résultat complet est écrit en JSON sur stdout. Un résumé lisible est écrit sur stderr.
+Full results are written as JSON to stdout. A human-readable summary is written to stderr.
 
 ## Configuration
 
-Les valeurs par défaut correspondent au mini-pilote demandé :
+Default values match the requested mini-pilot:
 
 ```bash
 OPENAI_MODEL=gpt-5.4-mini
@@ -75,9 +75,9 @@ OPENAI_INPUT_USD_PER_1M=0.75
 OPENAI_OUTPUT_USD_PER_1M=4.50
 ```
 
-Les tarifs par défaut utilisent la tarification standard OpenAI pour `gpt-5.4-mini` au 2026-06-16. Ajuster `OPENAI_INPUT_USD_PER_1M` et `OPENAI_OUTPUT_USD_PER_1M` si votre endpoint ou votre mode de traitement facture autrement.
+Default pricing uses standard OpenAI rates for `gpt-5.4-mini` as of 2026-06-16. Adjust `OPENAI_INPUT_USD_PER_1M` and `OPENAI_OUTPUT_USD_PER_1M` if your endpoint or billing model differs.
 
-## Vérification
+## Verification
 
 ```bash
 npm run typecheck
