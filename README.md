@@ -44,7 +44,7 @@ Reads the pool and cache from `data/`, then computes:
 - **Pathological items** — high stability but low accuracy (systematic bias)
 - **Unstable items** — stability < 0.8 at k=20
 
-Full results as JSON to stdout, human-readable summary to stderr.
+Full results as JSON to stdout. A markdown report (e.g. `analyses/2026-06-24_rhondda-pilot_gpt-5.4-mini.md`) is written to `analyses/`.
 
 ## Configuration
 

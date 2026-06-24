@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -400,37 +400,55 @@ export async function main(): Promise<void> {
     })),
   };
 
+  // Machine-readable JSON to stdout
   writeOut(JSON.stringify(result, null, 2));
 
-  // Human-readable summary to stderr
+  // Human-readable report to analyses/
+  const today = new Date().toISOString().slice(0, 10);
+  const modelSlug = CONFIG.model.replace(/[^a-z0-9.-]/gi, '_');
+  const reportName = `${today}_rhondda-pilot_${modelSlug}.md`;
+  const reportDir = path.resolve(process.cwd(), 'analyses');
+  const reportPath = path.join(reportDir, reportName);
+
+  await mkdir(reportDir, { recursive: true });
+
+  const lines: string[] = [];
+  const header = (k: number) => {
+    const r = kSweep.find((row) => row.k === k);
+    if (r === undefined) return '';
+    return `| ${k} | ${r.accuracyMean.toFixed(3)} | ${r.accuracyStd.toFixed(3)} | ${r.stabilityMean.toFixed(3)} | ${r.stabilityStd.toFixed(3)} | ${r.pctStabAbove95.toFixed(1)}% | ${r.pearson.toFixed(3)} | ${r.spearman.toFixed(3)} |`;
+  };
+
+  lines.push(`# Rhondda analysis — ${CONFIG.model}`);
+  lines.push('');
+  lines.push(`**Date:** ${today}  `);
+  lines.push(`**Items:** ${itemIds.length}  `);
+  lines.push(`**Draws:** ${poolRecords.length}  `);
+  lines.push(`**Cost:** $${costEstimateUsd.toFixed(2)}  `);
+  lines.push('');
+  lines.push('## K-sweep');
+  lines.push('');
+  lines.push('| k | Acc. | σ(Acc) | Stab. | σ(Stab) | %>0.95 | Pearson | Spearman |');
+  lines.push('|---|------|--------|-------|---------|--------|---------|----------|');
+  for (const k of K_VALUES) lines.push(header(k));
+  lines.push('');
+  lines.push('## Summary');
+  lines.push('');
+  lines.push(`| Metric | Value |`);
+  lines.push(`|--------|-------|`);
+  lines.push(`| Perfect accuracy (k=30) | ${perfectAccCount} |`);
+  lines.push(`| Always wrong (k=30) | ${alwaysWrongCount} |`);
+  lines.push(`| Systematic bias (stab>0.95, acc<0.5 at k=10) | ${pathologicalHighStabLowAcc.length} |`);
+  lines.push(`| Vote changes k=5→k=20 | ${voteChanges.length} |`);
+  lines.push(`| Unstable at k=20 (stab<0.8) | ${unstableItems.length} (avg acc: ${unstableItems.length > 0 ? mean(unstableItems.map((u) => u.accuracy)).toFixed(3) : 'N/A'}) |`);
+  lines.push(`| Stable at k=20 (stab>0.95) | ${stableItems.length} (avg acc: ${stableItems.length > 0 ? mean(stableItems.map((u) => u.accuracy)).toFixed(3) : 'N/A'}) |`);
+
+  await writeFile(reportPath, `${lines.join('\n')}\n`, 'utf8');
+
+  // Console summary
   writeErr('');
-  writeErr('=== Resultats Rhondda ===');
-  writeErr('');
-  writeErr(
-    `${'k'.padStart(3)} | ${'Acc.'.padStart(6)} | ${'σ(Acc)'.padStart(6)} | ${'Stab.'.padStart(6)} | ${'σ(Stab)'.padStart(7)} | ${'%>0.95'.padStart(6)} | ${'Pearson'.padStart(7)} | ${'Spearman'.padStart(8)}`,
-  );
-  writeErr('-'.repeat(78));
-  for (const row of kSweep) {
-    writeErr(
-      `${String(row.k).padStart(3)} | ${row.accuracyMean.toFixed(3).padStart(6)} | ${row.accuracyStd.toFixed(3).padStart(6)} | ${row.stabilityMean.toFixed(3).padStart(6)} | ${row.stabilityStd.toFixed(3).padStart(7)} | ${row.pctStabAbove95.toFixed(1).padStart(5)}% | ${row.pearson.toFixed(3).padStart(7)} | ${row.spearman.toFixed(3).padStart(8)}`,
-    );
-  }
-  writeErr('');
-  writeErr(`Items total: ${itemIds.length}`);
-  writeErr(`Tirages total: ${poolRecords.length}`);
-  writeErr(`Cout total estime: $${costEstimateUsd.toFixed(2)}`);
-  writeErr(`Items accuracy parfaite (k=30): ${perfectAccCount}`);
-  writeErr(`Items toujours faux (k=30): ${alwaysWrongCount}`);
-  writeErr(
-    `Items biais systematique (stab>0.95, acc<0.5 a k=10): ${pathologicalHighStabLowAcc.length}`,
-  );
-  writeErr(`Changements de vote k=5→k=20: ${voteChanges.length}`);
-  writeErr(
-    `Items instables a k=20 (stab<0.8): ${unstableItems.length} (acc moy: ${unstableItems.length > 0 ? mean(unstableItems.map((u) => u.accuracy)).toFixed(3) : 'N/A'})`,
-  );
-  writeErr(
-    `Items stables a k=20 (stab>0.95): ${stableItems.length} (acc moy: ${stableItems.length > 0 ? mean(stableItems.map((u) => u.accuracy)).toFixed(3) : 'N/A'})`,
-  );
+  writeErr(`Rapport ecrit : ${reportPath}`);
+  writeErr(`Items: ${itemIds.length} | Cout: $${costEstimateUsd.toFixed(2)} | Accuracy parfaite: ${perfectAccCount} | Toujours faux: ${alwaysWrongCount}`);
 }
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {

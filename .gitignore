@@ -83,4 +83,5 @@ CLAUDE.md
 
 # ---------- Rhondda outputs ----------
 data/
-analyses/
+analyses/*
+!analyses/.gitkeep
