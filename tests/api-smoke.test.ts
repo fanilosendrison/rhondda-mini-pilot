@@ -13,6 +13,7 @@ describe('API smoke test — gpt-5.4-mini', () => {
     { timeout: 60_000 },
     async () => {
       const adapter = createOpenAIAdapter({
+        // biome-ignore lint/style/noNonNullAssertion: guarded by it.skipIf(!API_KEY)
         apiKey: API_KEY!,
         model: MODEL,
         retry: { maxAttempts: 2, backoffBaseMs: 500, maxBackoffMs: 5_000 },

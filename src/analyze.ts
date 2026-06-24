@@ -426,6 +426,10 @@ export async function main(): Promise<void> {
   lines.push(`**Draws:** ${poolRecords.length}  `);
   lines.push(`**Cost:** $${costEstimateUsd.toFixed(2)}  `);
   lines.push('');
+  lines.push(
+    '> **Note:** Accuracy and stability values come from bootstrap resampling (N=200) without a fixed seed. Re-running the analysis on the same pool will produce slightly different numbers. Differences ≤0.01 are noise.',
+  );
+  lines.push('');
   lines.push('## K-sweep');
   lines.push('');
   lines.push('| k | Acc. | σ(Acc) | Stab. | σ(Stab) | %>0.95 | Pearson | Spearman |');
@@ -438,17 +442,25 @@ export async function main(): Promise<void> {
   lines.push(`|--------|-------|`);
   lines.push(`| Perfect accuracy (k=30) | ${perfectAccCount} |`);
   lines.push(`| Always wrong (k=30) | ${alwaysWrongCount} |`);
-  lines.push(`| Systematic bias (stab>0.95, acc<0.5 at k=10) | ${pathologicalHighStabLowAcc.length} |`);
+  lines.push(
+    `| Systematic bias (stab>0.95, acc<0.5 at k=10) | ${pathologicalHighStabLowAcc.length} |`,
+  );
   lines.push(`| Vote changes k=5→k=20 | ${voteChanges.length} |`);
-  lines.push(`| Unstable at k=20 (stab<0.8) | ${unstableItems.length} (avg acc: ${unstableItems.length > 0 ? mean(unstableItems.map((u) => u.accuracy)).toFixed(3) : 'N/A'}) |`);
-  lines.push(`| Stable at k=20 (stab>0.95) | ${stableItems.length} (avg acc: ${stableItems.length > 0 ? mean(stableItems.map((u) => u.accuracy)).toFixed(3) : 'N/A'}) |`);
+  lines.push(
+    `| Unstable at k=20 (stab<0.8) | ${unstableItems.length} (avg acc: ${unstableItems.length > 0 ? mean(unstableItems.map((u) => u.accuracy)).toFixed(3) : 'N/A'}) |`,
+  );
+  lines.push(
+    `| Stable at k=20 (stab>0.95) | ${stableItems.length} (avg acc: ${stableItems.length > 0 ? mean(stableItems.map((u) => u.accuracy)).toFixed(3) : 'N/A'}) |`,
+  );
 
   await writeFile(reportPath, `${lines.join('\n')}\n`, 'utf8');
 
   // Console summary
   writeErr('');
   writeErr(`Rapport ecrit : ${reportPath}`);
-  writeErr(`Items: ${itemIds.length} | Cout: $${costEstimateUsd.toFixed(2)} | Accuracy parfaite: ${perfectAccCount} | Toujours faux: ${alwaysWrongCount}`);
+  writeErr(
+    `Items: ${itemIds.length} | Cout: $${costEstimateUsd.toFixed(2)} | Accuracy parfaite: ${perfectAccCount} | Toujours faux: ${alwaysWrongCount}`,
+  );
 }
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {

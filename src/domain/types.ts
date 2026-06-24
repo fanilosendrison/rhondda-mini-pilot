@@ -46,6 +46,7 @@ export function isPoolRecord(value: unknown): value is PoolRecord {
   return (
     typeof obj.item_id === 'string' &&
     Number.isInteger(obj.tirage) &&
+    (obj.tirage as number) >= 1 &&
     typeof obj.prompt === 'string' &&
     typeof obj.response === 'string' &&
     typeof obj.timestamp === 'string' &&
