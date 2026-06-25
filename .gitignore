@@ -82,6 +82,5 @@ SPEC_MANIFEST.md
 CLAUDE.md
 
 # ---------- Rhondda outputs ----------
-data/
 analyses/*
 !analyses/.gitkeep
